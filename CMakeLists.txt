@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(tddProject LANGUAGES CXX)
 
+set(UNITTEST)
+
 if(UNITTEST)
 	add_subdirectory(googletests/)
 endif()
