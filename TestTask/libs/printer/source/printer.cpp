@@ -1,4 +1,4 @@
-#include "printer.h"
+#include "printer/printer.h"
 
 Printing::Printer::Printer() : printStream(std::cerr)
 {
