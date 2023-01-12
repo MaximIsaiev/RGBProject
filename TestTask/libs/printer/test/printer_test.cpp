@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "printer.h"
+#include "printer/printer.h"
 
 /**
  * @brief этот тест ничего не тестирует. это стартовый тест, который был написан до написания кода свомого принтера.

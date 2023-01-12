@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD 11)
 file(GLOB_RECURSE SOURCES *.h gmock/src/gmock-all.cc gtest/src/gtest-all.cc)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
-target_link_libraries(${PROJECT_NAME} pthread )
+
+
 include_directories(gmock/include gmock gtest gtest/include)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gtest/include)
