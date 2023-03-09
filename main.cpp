@@ -1,6 +1,7 @@
 #include "printer/printer.h"
+#include "rgb/rgbsimplebackend.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     Printing::Printer printer;
 
@@ -17,5 +18,7 @@ int main()
 
     std::cerr << " принтеров создано: " << Printing::Printer::getCountCreatedPrinters() << std::endl;
 
-	return 0;
+    auto app = new RGBSimpleBackend();
+
+    return app->start(argc, argv);
 }
