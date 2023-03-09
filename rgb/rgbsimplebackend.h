@@ -10,6 +10,8 @@ public:
 
     int start(int argc, char *argv[]);
 
+    Q_INVOKABLE void hello_from_QML();
+
 signals:
 
 };

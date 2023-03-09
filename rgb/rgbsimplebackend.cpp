@@ -1,11 +1,12 @@
 #include "rgbsimplebackend.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QDebug>
 
 RGBSimpleBackend::RGBSimpleBackend(QObject *parent)
     : QObject{parent}
 {
-
+    qmlRegisterType<RGBSimpleBackend>("tdd.project", 1, 0, "RGBSimpleBackend");
 }
 
 int RGBSimpleBackend::start(int argc, char *argv[])
@@ -25,4 +26,9 @@ int RGBSimpleBackend::start(int argc, char *argv[])
     engine.load(url);
 
     return app.exec();
+}
+
+void RGBSimpleBackend::hello_from_QML()
+{
+   qDebug() << "hello from QML!";
 }
