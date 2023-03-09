@@ -14,7 +14,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick)
 
-qt_add_resources(QT_RESOURCES qml.qrc)
+if (QT_VERSION_MAJOR EQUAL 6)
+    qt_add_resources(QT_RESOURCES qml.qrc)
+else()
+    qt5_add_resources(QT_RESOURCES qml.qrc)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
     ${QT_RESOURCES}
