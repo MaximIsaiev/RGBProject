@@ -6,6 +6,8 @@ class ExampleClass
 {
 public:
     ExampleClass();
+
+    int initializeApplication(int &argc, char **argv);
 };
 
 #endif // EXAMPLECLASS_H

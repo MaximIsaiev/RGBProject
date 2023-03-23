@@ -9,3 +9,12 @@ TEST(ExampleTests, Creating) {
     ExampleClass testedObject;
 }
 
+/**
+ * @brief этот тест запускает gui-приложение
+ */
+TEST(ExampleTests, Initialization) {
+    ExampleClass application;
+    int argc = 0;
+    application.initializeApplication(argc, NULL);
+}
+
