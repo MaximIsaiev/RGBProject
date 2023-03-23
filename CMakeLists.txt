@@ -25,6 +25,7 @@ endif()
 
 add_subdirectory(TestTask/libs/printer)
 
+add_subdirectory(TestTask/libs/exampleProject)
 
 if(UNITTEST)
         message(" output lib dir " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG})
