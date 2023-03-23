@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(tddProject LANGUAGES CXX)
 
-set(UNITTEST=ON)
+set(UNITTEST ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
