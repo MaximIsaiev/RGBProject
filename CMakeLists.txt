@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(tddProject LANGUAGES CXX)
 
-set(UNITTEST=ON)
+set(UNITTEST ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -25,6 +25,7 @@ endif()
 
 add_subdirectory(TestTask/libs/printer)
 
+add_subdirectory(TestTask/libs/exampleProject)
 
 if(UNITTEST)
         message(" output lib dir " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG})
