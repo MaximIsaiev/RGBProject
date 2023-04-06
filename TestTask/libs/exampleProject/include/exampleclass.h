@@ -1,13 +1,20 @@
 #ifndef EXAMPLECLASS_H
 #define EXAMPLECLASS_H
+#include <QMainWindow>
+#include <QLabel>
+#include <QVBoxLayout>
 
-
-class ExampleClass
+class ExampleClass : public QWidget
 {
 public:
-    ExampleClass();
+    ExampleClass(QWidget *parent = nullptr);
+private:
+    QLabel *imageLabel;
+    QImage image;
+    QVBoxLayout *layout;
 
-    int initializeApplication(int &argc, char **argv);
+    void createActions();
+    void open();
 };
 
 #endif // EXAMPLECLASS_H
