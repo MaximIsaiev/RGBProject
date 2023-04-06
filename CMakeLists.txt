@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(tddProject LANGUAGES CXX)
 
-set(UNITTEST=ON)
+set(UNITTEST ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -24,6 +24,9 @@ endif()
 
 
 add_subdirectory(TestTask/libs/printer)
+
+add_subdirectory(TestTask/libs/exampleProject)
+
 add_subdirectory(rgb)
 
 if(UNITTEST)
@@ -34,11 +37,7 @@ endif()
 
 add_executable(tddProject main.cpp)
 
-target_link_libraries(${PROJECT_NAME}
-    Printer
-    rgbSimple
-)
-
+target_link_libraries(${PROJECT_NAME} Printer)
 
 if(UNIX)
         add_custom_target( distclean COMMAND find . -name *_automoc.cpp -type f -delete
