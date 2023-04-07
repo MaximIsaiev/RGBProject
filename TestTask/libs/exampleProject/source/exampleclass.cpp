@@ -44,6 +44,9 @@ void ExampleClass::open()
                 "Open Document",
                 QDir::currentPath(),
                 "All files (*.*) ;; PNG files (*.png)");
+    qDebug() << fileName;
+    fileName = QDir::toNativeSeparators(fileName);
+    qDebug() << fileName;
 
     /*QFile file(fileName);
 
