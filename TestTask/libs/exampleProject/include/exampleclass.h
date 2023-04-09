@@ -12,6 +12,7 @@ private:
     QLabel *imageLabel;
     QImage image;
     QVBoxLayout *layout;
+    QString filePath;
 
     void createActions();
     void open();

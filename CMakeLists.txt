@@ -27,8 +27,6 @@ add_subdirectory(TestTask/libs/printer)
 
 add_subdirectory(TestTask/libs/exampleProject)
 
-add_subdirectory(rgb)
-
 if(UNITTEST)
         message(" output lib dir " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG})
         enable_testing()

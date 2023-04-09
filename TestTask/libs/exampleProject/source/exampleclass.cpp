@@ -8,7 +8,10 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFormLayout>
 #include <QPushButton>
+#include <QLineEdit>
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -22,40 +25,44 @@ ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent), imageLabel(new QL
     setWindowTitle(tr("Analog Clock"));
     resize(windowWidth, windowHeight);
     layout = new QVBoxLayout(this);
-    imageLabel->setBackgroundRole(QPalette::Base);
-    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    imageLabel->setScaledContents(true);
-    layout->addWidget(imageLabel);
+    imageLabel->setFixedSize(100, 100);
+    setLayout(layout);
+    layout->setAlignment(Qt::AlignTop);
     createActions();
 }
 
 void ExampleClass::createActions()
 {
-    auto button = new QPushButton("File",this);
-    layout->addWidget(button);
+
+    auto formLayout = new QFormLayout(this);
+
+    auto enterFileNameText = new QLabel(this);
+    enterFileNameText->setText(tr("Введите путь к бинарному файлу:"));
+
+    auto lineEdit = new QLineEdit(this);
+    lineEdit->setAutoFillBackground(true);
+
+    formLayout->addRow(enterFileNameText, lineEdit);
+    formLayout->setSpacing(10);
+
+    auto button = new QPushButton(tr("Открыть"), this);
+    button->setFixedWidth(100);
 
     connect(button, &QPushButton::clicked, this, &ExampleClass::open);
+    connect(lineEdit, &QLineEdit::textChanged, this, [this](QString path){
+        filePath = path;
+    });
+
+    layout->addItem(formLayout);
+    layout->addWidget(button);
+    layout->addWidget(imageLabel);
 }
 
 void ExampleClass::open()
 {
-    QString fileName =  QFileDialog::getOpenFileName(
-                this,
-                "Open Document",
-                QDir::currentPath(),
-                "All files (*.*) ;; PNG files (*.png)");
-    qDebug() << fileName;
+    QString fileName = filePath;
     fileName = QDir::toNativeSeparators(fileName);
     qDebug() << fileName;
-
-    /*QFile file(fileName);
-
-    if (!file.open(QFile::ReadOnly)) {
-        qDebug() << tr("Не удалось открыть файл");
-        return;
-    }
-
-    QByteArray byteArray = file.readAll();*/
 
     // Где-то здесь будет происходить конвертация одномерного массива в двухмерный массив
     // и вообще вся магия
@@ -174,17 +181,9 @@ void ExampleClass::open()
 
     int width = 100, height = 100; // your valid values here
 
-
     auto newImage(QImage((uint8_t *)pixelsRGB.data(), width, height, QImage::Format_RGB888));
 
-    //QImage image;
-    //image.loadFromData(byteArray);
-    //setSimpleImage(imageToUrl(image));
-
     file.close();
-
-    //QImage newImage;
-    //newImage.loadFromData(byteArray);
 
     image = newImage;
     imageLabel->setPixmap(QPixmap::fromImage(image));
