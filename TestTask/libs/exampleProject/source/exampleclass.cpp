@@ -20,9 +20,11 @@
 const auto windowWidth = 1024;
 const auto windowHeight = 720;
 
-ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent), imageLabel(new QLabel(this))
+ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent),
+    imageLabel(new QLabel(this)),
+    MagicNumbers(new QLabel(this))
 {
-    setWindowTitle(tr("Analog Clock"));
+    setWindowTitle(tr("RGB Fixer"));
     resize(windowWidth, windowHeight);
     layout = new QVBoxLayout(this);
     imageLabel->setFixedSize(100, 100);
@@ -33,7 +35,6 @@ ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent), imageLabel(new QL
 
 void ExampleClass::createActions()
 {
-
     auto formLayout = new QFormLayout(this);
 
     auto enterFileNameText = new QLabel(this);
@@ -53,9 +54,18 @@ void ExampleClass::createActions()
         filePath = path;
     });
 
+    auto imageText = new QLabel(this);
+    imageText->setText(tr("Преобразованная картинка:"));
+
+    fileSizeLabel = new QLabel(this);
+
+
     layout->addItem(formLayout);
     layout->addWidget(button);
+    layout->addWidget(imageText);
     layout->addWidget(imageLabel);
+    layout->addWidget(fileSizeLabel);
+    layout->addWidget(MagicNumbers);
 }
 
 void ExampleClass::open()
@@ -75,10 +85,12 @@ void ExampleClass::open()
         return;
     }
 
+    readWidthAndHeight(fileName);
+    imageLabel->setFixedSize(imageWidth, imageHeight);
+
     //File size
     file.seekg(0, std::ios::end);
     int size = file.tellg();
-    //std::cout << size << std::endl;
     file.seekg(0, std::ios::beg);
 
     //std::vector<QRgb> pixelsRGB;
@@ -173,35 +185,46 @@ void ExampleClass::open()
         //printf("%d\n", bluePixel);
     }
 
-    /*pixelsRGB.resize(lengthOfColorData);
-    for (int i = 0; i < lengthOfColorData; i++)
-    {
-        pixelsRGB[i] = qRgb(redData[i] ,greenData[i] ,blueData[i] );
-    }*/
+    int width = imageWidth, height = imageHeight; // your valid values here
+    fileSizeLabel->setText(QString("Размер файла: %1 kB").arg(QString::number(size / 1024.0)));
 
-    int width = 100, height = 100; // your valid values here
-
-
-    //auto newImage(QImage((uchar *)pixelsRGB.data(), width, height, QImage::Format_RGB888));
+    MagicNumbers->setText(QString("Первое магическое число: %1\nВторое магическое число: %2\nТретье магическое число: %3").arg(magicNumberRed, 0, 16).arg(magicNumberGreen, 0, 16).arg(magicNumberBlue, 0, 16));
 
     QImage newImage(width, height, QImage::Format_RGB888);
-      newImage.fill(QColor(Qt::green).rgb());
+    newImage.fill(QColor(Qt::green).rgb());
 
-      for (int x = 0; x < height; ++x)
-      {
+    for (int x = 0; x < height; ++x)
+    {
         for (int y = 0; y < width; ++y)
         {
-          newImage.setPixel(x, y, qRgb(redData[x * width + y], greenData[x * width + y], blueData[x * width + y]));
+            newImage.setPixel(x, y, qRgb(redData[x * width + y], greenData[x * width + y], blueData[x * width + y]));
         }
-      }
-
-    //QImage image;
-    //image.loadFromData(byteArray);
-    //setSimpleImage(imageToUrl(image));
+    }
 
     file.close();
 
     image = newImage;
     imageLabel->setPixmap(QPixmap::fromImage(image));
     imageLabel->adjustSize();
+}
+
+void ExampleClass::readWidthAndHeight(QString &path)
+{
+    auto fileName = QDir(path).dirName();
+    auto stringList = fileName.split('x');
+
+    bool okWidth {false};
+    bool okHeight {false};
+
+    auto width = stringList.first().toInt(&okWidth);
+    auto height = stringList.back().split('.').first().toInt(&okHeight);
+
+    if (!okWidth || !okHeight) {
+        qDebug() << tr("Файл имеет неверное наименование!");
+        return;
+    }
+
+    imageHeight = height;
+    imageWidth = width;
+
 }
