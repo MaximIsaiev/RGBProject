@@ -71,7 +71,7 @@ void ExampleClass::open()
     //std::cout << size << std::endl;
     file.seekg(0, std::ios::beg);
 
-    std::vector<QRgb> pixelsRGB;
+    //std::vector<QRgb> pixelsRGB;
     uint32_t magicNumberRed = 0;
     uint32_t magicNumberGreen = 0;
     uint32_t magicNumberBlue = 0;
@@ -163,16 +163,27 @@ void ExampleClass::open()
         //printf("%d\n", bluePixel);
     }
 
-    pixelsRGB.resize(lengthOfColorData);
+    /*pixelsRGB.resize(lengthOfColorData);
     for (int i = 0; i < lengthOfColorData; i++)
     {
         pixelsRGB[i] = qRgb(redData[i] ,greenData[i] ,blueData[i] );
-    }
+    }*/
 
     int width = 100, height = 100; // your valid values here
 
 
-    auto newImage(QImage((uint8_t *)pixelsRGB.data(), width, height, QImage::Format_RGB888));
+    //auto newImage(QImage((uchar *)pixelsRGB.data(), width, height, QImage::Format_RGB888));
+
+    QImage newImage(width, height, QImage::Format_RGB888);
+      newImage.fill(QColor(Qt::green).rgb());
+
+      for (int x = 0; x < height; ++x)
+      {
+        for (int y = 0; y < width; ++y)
+        {
+          newImage.setPixel(x, y, qRgb(redData[x * width + y], greenData[x * width + y], blueData[x * width + y]));
+        }
+      }
 
     //QImage image;
     //image.loadFromData(byteArray);
