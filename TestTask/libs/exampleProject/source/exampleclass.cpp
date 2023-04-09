@@ -27,7 +27,8 @@ ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent),
     setWindowTitle(tr("RGB Fixer"));
     resize(windowWidth, windowHeight);
     layout = new QVBoxLayout(this);
-    imageLabel->setFixedSize(100, 100);
+    imageLabel->setFixedSize(350, 350);
+    imageLabel->setScaledContents(true);
     setLayout(layout);
     layout->setAlignment(Qt::AlignTop);
     createActions();
@@ -86,7 +87,6 @@ void ExampleClass::open()
     }
 
     readWidthAndHeight(fileName);
-    imageLabel->setFixedSize(imageWidth, imageHeight);
 
     //File size
     file.seekg(0, std::ios::end);
