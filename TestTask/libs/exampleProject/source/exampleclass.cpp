@@ -190,7 +190,7 @@ void ExampleClass::open()
 
     MagicNumbers->setText(QString("Первое магическое число: %1\nВторое магическое число: %2\nТретье магическое число: %3").arg(magicNumberRed, 0, 16).arg(magicNumberGreen, 0, 16).arg(magicNumberBlue, 0, 16));
 
-    QImage newImage(height, width, QImage::Format_RGB888);
+    QImage newImage(width, height, QImage::Format_RGB888);
     newImage.fill(QColor(Qt::green).rgb());
 
     for (int x = 0; x < width; ++x)
