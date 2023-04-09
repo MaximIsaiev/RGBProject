@@ -193,11 +193,11 @@ void ExampleClass::open()
     QImage newImage(width, height, QImage::Format_RGB888);
     newImage.fill(QColor(Qt::green).rgb());
 
-    for (int x = 0; x < height; ++x)
+    for (int x = 0; x < width; ++x)
     {
-        for (int y = 0; y < width; ++y)
+        for (int y = 0; y < height; ++y)
         {
-            newImage.setPixel(x, y, qRgb(redData[x * width + y], greenData[x * width + y], blueData[x * width + y]));
+            newImage.setPixel(x, y, qRgb(redData[y * width + x], greenData[y * width + x], blueData[y * width + x]));
         }
     }
 
