@@ -221,10 +221,22 @@ void ExampleClass::readWidthAndHeight(QString &path)
 
     if (!okWidth || !okHeight) {
         qDebug() << tr("Файл имеет неверное наименование!");
+        imageHeight = 0;
+        imageWidth = 0;
         return;
     }
 
     imageHeight = height;
     imageWidth = width;
 
+}
+
+int ExampleClass::getImageHeght() const
+{
+    return imageHeight;
+}
+
+int ExampleClass::getImageWidth() const
+{
+    return imageWidth;
 }
