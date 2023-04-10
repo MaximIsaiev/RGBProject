@@ -1,4 +1,4 @@
-#include "exampleclass.h"
+#include "simplergb.h"
 #include <QMainWindow>
 #include <QWidget>
 #include <QLabel>
@@ -20,7 +20,7 @@
 const auto windowWidth = 1024;
 const auto windowHeight = 720;
 
-ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent),
+simpleRGB::simpleRGB(QWidget *parent) : QWidget(parent),
     imageLabel(new QLabel(this)),
     MagicNumbers(new QLabel(this))
 {
@@ -34,7 +34,7 @@ ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent),
     createActions();
 }
 
-void ExampleClass::createActions()
+void simpleRGB::createActions()
 {
     auto formLayout = new QFormLayout(this);
 
@@ -50,7 +50,7 @@ void ExampleClass::createActions()
     auto button = new QPushButton(tr("Открыть"), this);
     button->setFixedWidth(100);
 
-    connect(button, &QPushButton::clicked, this, &ExampleClass::open);
+    connect(button, &QPushButton::clicked, this, &simpleRGB::open);
     connect(lineEdit, &QLineEdit::textChanged, this, [this](QString path){
         filePath = path;
     });
@@ -69,7 +69,7 @@ void ExampleClass::createActions()
     layout->addWidget(MagicNumbers);
 }
 
-void ExampleClass::open()
+void simpleRGB::open()
 {
     QString fileName = filePath;
     fileName = QDir::toNativeSeparators(fileName);
@@ -208,7 +208,7 @@ void ExampleClass::open()
     imageLabel->adjustSize();
 }
 
-void ExampleClass::readWidthAndHeight(QString &path)
+void simpleRGB::readWidthAndHeight(QString &path)
 {
     auto fileName = QDir(path).dirName();
     auto stringList = fileName.split('x');
@@ -231,12 +231,12 @@ void ExampleClass::readWidthAndHeight(QString &path)
 
 }
 
-int ExampleClass::getImageHeght() const
+int simpleRGB::getImageHeght() const
 {
     return imageHeight;
 }
 
-int ExampleClass::getImageWidth() const
+int simpleRGB::getImageWidth() const
 {
     return imageWidth;
 }

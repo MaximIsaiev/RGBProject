@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "exampleclass.h"
+#include "simplergb.h"
 #include <QApplication>
 
 /**
@@ -9,7 +9,7 @@
 TEST(ExampleTests, Creating) {
     int argc {0};
     QApplication app(argc, nullptr);
-    ExampleClass testedObject;
+    simpleRGB testedObject;
     testedObject.show();
     app.exec();
 }
@@ -17,7 +17,7 @@ TEST(ExampleTests, Creating) {
 TEST(ExampleTests, ReadWidthAndHeight) {
     int argc {0};
     QApplication app(argc, nullptr);
-    ExampleClass testedObject;
+    simpleRGB testedObject;
 
     QString case1 ("/home/100x100.dat");
     testedObject.readWidthAndHeight(case1);
