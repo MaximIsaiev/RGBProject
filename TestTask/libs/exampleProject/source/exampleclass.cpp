@@ -8,7 +8,10 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFormLayout>
 #include <QPushButton>
+#include <QLineEdit>
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -17,45 +20,60 @@
 const auto windowWidth = 1024;
 const auto windowHeight = 720;
 
-ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent), imageLabel(new QLabel(this))
+ExampleClass::ExampleClass(QWidget *parent) : QWidget(parent),
+    imageLabel(new QLabel(this)),
+    MagicNumbers(new QLabel(this))
 {
-    setWindowTitle(tr("Analog Clock"));
+    setWindowTitle(tr("RGB Fixer"));
     resize(windowWidth, windowHeight);
     layout = new QVBoxLayout(this);
-    imageLabel->setBackgroundRole(QPalette::Base);
-    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    imageLabel->setFixedSize(350, 350);
     imageLabel->setScaledContents(true);
-    layout->addWidget(imageLabel);
+    setLayout(layout);
+    layout->setAlignment(Qt::AlignTop);
     createActions();
 }
 
 void ExampleClass::createActions()
 {
-    auto button = new QPushButton("File",this);
-    layout->addWidget(button);
+    auto formLayout = new QFormLayout(this);
+
+    auto enterFileNameText = new QLabel(this);
+    enterFileNameText->setText(tr("Введите путь к бинарному файлу:"));
+
+    auto lineEdit = new QLineEdit(this);
+    lineEdit->setAutoFillBackground(true);
+
+    formLayout->addRow(enterFileNameText, lineEdit);
+    formLayout->setSpacing(10);
+
+    auto button = new QPushButton(tr("Открыть"), this);
+    button->setFixedWidth(100);
 
     connect(button, &QPushButton::clicked, this, &ExampleClass::open);
+    connect(lineEdit, &QLineEdit::textChanged, this, [this](QString path){
+        filePath = path;
+    });
+
+    auto imageText = new QLabel(this);
+    imageText->setText(tr("Преобразованная картинка:"));
+
+    fileSizeLabel = new QLabel(this);
+
+
+    layout->addItem(formLayout);
+    layout->addWidget(button);
+    layout->addWidget(imageText);
+    layout->addWidget(imageLabel);
+    layout->addWidget(fileSizeLabel);
+    layout->addWidget(MagicNumbers);
 }
 
 void ExampleClass::open()
 {
-    QString fileName =  QFileDialog::getOpenFileName(
-                this,
-                "Open Document",
-                QDir::currentPath(),
-                "All files (*.*) ;; PNG files (*.png)");
-    qDebug() << fileName;
+    QString fileName = filePath;
     fileName = QDir::toNativeSeparators(fileName);
     qDebug() << fileName;
-
-    /*QFile file(fileName);
-
-    if (!file.open(QFile::ReadOnly)) {
-        qDebug() << tr("Не удалось открыть файл");
-        return;
-    }
-
-    QByteArray byteArray = file.readAll();*/
 
     // Где-то здесь будет происходить конвертация одномерного массива в двухмерный массив
     // и вообще вся магия
@@ -68,13 +86,14 @@ void ExampleClass::open()
         return;
     }
 
+    readWidthAndHeight(fileName);
+
     //File size
     file.seekg(0, std::ios::end);
     int size = file.tellg();
-    //std::cout << size << std::endl;
     file.seekg(0, std::ios::beg);
 
-    std::vector<QRgb> pixelsRGB;
+    //std::vector<QRgb> pixelsRGB;
     uint32_t magicNumberRed = 0;
     uint32_t magicNumberGreen = 0;
     uint32_t magicNumberBlue = 0;
@@ -166,27 +185,58 @@ void ExampleClass::open()
         //printf("%d\n", bluePixel);
     }
 
-    pixelsRGB.resize(lengthOfColorData);
-    for (int i = 0; i < lengthOfColorData; i++)
+    int width = imageWidth, height = imageHeight; // your valid values here
+    fileSizeLabel->setText(QString("Размер файла: %1 kB").arg(QString::number(size / 1024.0)));
+
+    MagicNumbers->setText(QString("Первое магическое число: %1\nВторое магическое число: %2\nТретье магическое число: %3").arg(magicNumberRed, 0, 16).arg(magicNumberGreen, 0, 16).arg(magicNumberBlue, 0, 16));
+
+    QImage newImage(width, height, QImage::Format_RGB888);
+    newImage.fill(QColor(Qt::green).rgb());
+
+    for (int x = 0; x < width; ++x)
     {
-        pixelsRGB[i] = qRgb(redData[i] ,greenData[i] ,blueData[i] );
+        for (int y = 0; y < height; ++y)
+        {
+            newImage.setPixel(x, y, qRgb(redData[y * width + x], greenData[y * width + x], blueData[y * width + x]));
+        }
     }
 
-    int width = 100, height = 100; // your valid values here
-
-
-    auto newImage(QImage((uint8_t *)pixelsRGB.data(), width, height, QImage::Format_RGB888));
-
-    //QImage image;
-    //image.loadFromData(byteArray);
-    //setSimpleImage(imageToUrl(image));
-
     file.close();
-
-    //QImage newImage;
-    //newImage.loadFromData(byteArray);
 
     image = newImage;
     imageLabel->setPixmap(QPixmap::fromImage(image));
     imageLabel->adjustSize();
+}
+
+void ExampleClass::readWidthAndHeight(QString &path)
+{
+    auto fileName = QDir(path).dirName();
+    auto stringList = fileName.split('x');
+
+    bool okWidth {false};
+    bool okHeight {false};
+
+    auto width = stringList.first().toInt(&okWidth);
+    auto height = stringList.back().split('.').first().toInt(&okHeight);
+
+    if (!okWidth || !okHeight) {
+        qDebug() << tr("Файл имеет неверное наименование!");
+        imageHeight = 0;
+        imageWidth = 0;
+        return;
+    }
+
+    imageHeight = height;
+    imageWidth = width;
+
+}
+
+int ExampleClass::getImageHeght() const
+{
+    return imageHeight;
+}
+
+int ExampleClass::getImageWidth() const
+{
+    return imageWidth;
 }
