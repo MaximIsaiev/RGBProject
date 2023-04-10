@@ -60,7 +60,6 @@ void simpleRGB::createActions()
 
     fileSizeLabel = new QLabel(this);
 
-
     layout->addItem(formLayout);
     layout->addWidget(button);
     layout->addWidget(imageText);
@@ -75,8 +74,6 @@ void simpleRGB::open()
     fileName = QDir::toNativeSeparators(fileName);
     qDebug() << fileName;
 
-    // Где-то здесь будет происходить конвертация одномерного массива в двухмерный массив
-    // и вообще вся магия
     std::ifstream file;
     std::string path = fileName.toStdString();
     file.open(path, std::ios::in | std::ios::binary);
@@ -87,17 +84,17 @@ void simpleRGB::open()
     }
 
     readWidthAndHeight(fileName);
+    imageLabel->setFixedWidth(350.0 * imageWidth / imageHeight);
 
     //File size
     file.seekg(0, std::ios::end);
     int size = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    //std::vector<QRgb> pixelsRGB;
-    uint32_t magicNumberRed = 0;
-    uint32_t magicNumberGreen = 0;
-    uint32_t magicNumberBlue = 0;
-    uint32_t magicNumberRead = 0;
+    uint32_t *magicNumberRed = new uint32_t;
+    uint32_t *magicNumberGreen = new uint32_t;
+    uint32_t *magicNumberBlue = new uint32_t;
+    uint32_t *magicNumberRead = new uint32_t;
     int startRedChannel = 4;
     int endRedChannel = 0;
     int startGreenChannel = 0;
@@ -110,39 +107,37 @@ void simpleRGB::open()
     std::vector<uint8_t> blueData;
 
     //Red channel
-    file.read((char*)&magicNumberRed, sizeof magicNumberRed); printf("%#x\n", magicNumberRed);
+    file.read(reinterpret_cast<char*>(magicNumberRed), sizeof(uint32_t));
     while (position <= size - 4)
     {
         file.seekg(position, std::ios_base::beg);
-        file.read((char*)&magicNumberRead, sizeof magicNumberRead);
-        if (magicNumberRead == magicNumberRed)
+        file.read(reinterpret_cast<char*>(magicNumberRead), sizeof(uint32_t));
+        if (*magicNumberRead == *magicNumberRed)
         {
             endRedChannel = position;
             break;
         }
         position++;
     }
-    int lengthOfColorData = endRedChannel - startRedChannel;
 
-    uint8_t redPixel = 0;
+    uint8_t *redPixel = new uint8_t;
     for (int i = startRedChannel; i < endRedChannel; i++)
     {
         file.seekg(i, std::ios::beg);
-        file.read((char*)&redPixel, sizeof(redPixel));
-        redData.push_back(redPixel);
-        //printf("%d\n", redPixel);
+        file.read(reinterpret_cast<char*>(redPixel), sizeof(redPixel));
+        redData.push_back(*redPixel);
     }
 
     //GreenChanel
     file.seekg(endRedChannel + 4, std::ios_base::beg);
     startGreenChannel = endRedChannel + 8;
     position = startGreenChannel + 8;
-    file.read((char*)&magicNumberGreen, sizeof magicNumberGreen); printf("%#x\n", magicNumberGreen);
+    file.read(reinterpret_cast<char*>(magicNumberGreen), sizeof(uint32_t));
     while (position <= size - 4)
     {
         file.seekg(position, std::ios_base::beg);
-        file.read((char*)&magicNumberRead, sizeof magicNumberRead);
-        if (magicNumberRead == magicNumberGreen)
+        file.read(reinterpret_cast<char*>(magicNumberRead), sizeof(uint32_t));
+        if (*magicNumberRead == *magicNumberGreen)
         {
             endGreenChannel = position;
             break;
@@ -150,25 +145,24 @@ void simpleRGB::open()
         position++;
     }
 
-    uint8_t greenPixel = 0;
+    uint8_t *greenPixel = new uint8_t;
     for (int i = startGreenChannel; i < endGreenChannel; i++)
     {
         file.seekg(i, std::ios::beg);
-        file.read((char*)&greenPixel, sizeof(greenPixel));
-        greenData.push_back(greenPixel);
-        //printf("%d\n", greenPixel);
+        file.read(reinterpret_cast<char*>(greenPixel), sizeof(greenPixel));
+        greenData.push_back(*greenPixel);
     }
 
     //BlueChanel
     file.seekg(endGreenChannel + 4, std::ios_base::beg);
     startBlueChannel = endGreenChannel + 8;
     position = startBlueChannel + 8;
-    file.read((char*)&magicNumberBlue, sizeof magicNumberBlue); printf("%#x\n", magicNumberBlue);
+    file.read(reinterpret_cast<char*>(magicNumberBlue), sizeof(uint32_t));
     while (position <= size - 4)
     {
         file.seekg(position, std::ios_base::beg);
-        file.read((char*)&magicNumberRead, sizeof magicNumberRead);
-        if (magicNumberRead == magicNumberBlue)
+        file.read(reinterpret_cast<char*>(magicNumberRead), sizeof(uint32_t));
+        if (*magicNumberRead == *magicNumberBlue)
         {
             endBlueChannel = position;
             break;
@@ -176,19 +170,17 @@ void simpleRGB::open()
         position++;
     }
 
-    uint8_t bluePixel = 0;
+    uint8_t *bluePixel = new uint8_t;
     for (int i = startBlueChannel; i < endBlueChannel; i++)
     {
         file.seekg(i, std::ios::beg);
-        file.read((char*)&bluePixel, sizeof(bluePixel));
-        blueData.push_back(bluePixel);
-        //printf("%d\n", bluePixel);
+        file.read(reinterpret_cast<char*>(bluePixel), sizeof(bluePixel));
+        blueData.push_back(*bluePixel);
     }
 
     int width = imageWidth, height = imageHeight; // your valid values here
     fileSizeLabel->setText(QString("Размер файла: %1 kB").arg(QString::number(size / 1024.0)));
-
-    MagicNumbers->setText(QString("Первое магическое число: %1\nВторое магическое число: %2\nТретье магическое число: %3").arg(magicNumberRed, 0, 16).arg(magicNumberGreen, 0, 16).arg(magicNumberBlue, 0, 16));
+    MagicNumbers->setText(QString("Первое магическое число: %1\nВторое магическое число: %2\nТретье магическое число: %3").arg(*magicNumberRed, 0, 16).arg(*magicNumberGreen, 0, 16).arg(*magicNumberBlue, 0, 16));
 
     QImage newImage(width, height, QImage::Format_RGB888);
     newImage.fill(QColor(Qt::green).rgb());
@@ -205,7 +197,6 @@ void simpleRGB::open()
 
     image = newImage;
     imageLabel->setPixmap(QPixmap::fromImage(image));
-    imageLabel->adjustSize();
 }
 
 void simpleRGB::readWidthAndHeight(QString &path)
