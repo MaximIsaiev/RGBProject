@@ -1,13 +1,12 @@
-#ifndef EXAMPLECLASS_H
-#define EXAMPLECLASS_H
+#pragma once
 #include <QMainWindow>
 #include <QLabel>
 #include <QVBoxLayout>
 
-class ExampleClass : public QWidget
+class simpleRGB : public QWidget
 {
 public:
-    ExampleClass(QWidget *parent = nullptr);
+    simpleRGB(QWidget *parent = nullptr);
 
     void readWidthAndHeight(QString &path);
 
@@ -27,5 +26,3 @@ private:
     void createActions();
     void open();
 };
-
-#endif // EXAMPLECLASS_H
